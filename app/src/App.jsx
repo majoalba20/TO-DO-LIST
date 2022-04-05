@@ -1,22 +1,34 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react'
 import Form from './components/Form'
-import List from './components/List';
+import List from './components/List'
+import todos from './apis/index'
+
+const apptitle = 'TO-DO-APP'
 
 function App() {
 
-  const apptitle = 'TO-DO-APP';
+  const [todoList, setTodoList] = useState([]);
 
-  const list = [{title: 'Test #1', complete: false},
-    {title: 'Test #2'},{title: 'Test #3'}]
+  useEffect(() => {
+    async function fetchData() {
+        const { data } = await todos.get("/todos");
+        setTodoList(data);
+    }
+    fetchData();
+  }, []);
 
-  const [todoList, setTodoList] = useState(list);
-
-  const addTodo = (item) => {
-    setTodoList((oldlist) => [...oldlist, item]);
+  const addTodo = async (item) => {
+    const { data } = await todos.post("/todos/new", item);
+    setTodoList((oldlist) => [...oldlist, data]);
   };
 
-  const removeTodo = (id) => {
-    setTodoList((oldlist)=> oldlist.filter((item)=> item.title !== id))
+  const removeTodo = async (id) => {
+    await todos.delete(`/todos/${id}`);
+    setTodoList((oldlist)=> oldlist.filter((item)=> item._id !== id))
+  };
+
+  const editTodo = async (id, item) => {
+    await todos.put(`/todos/${id}`, item);
   };
 
   return (
@@ -25,7 +37,11 @@ function App() {
         <h1>{apptitle}</h1>
         <Form addTodo={addTodo}/>
       </section>
-      <section className='w-1/4 m-auto'><List list={todoList} removeTodoListProp={removeTodo}/></section>
+      <section className='w-1/4 m-auto'>
+        <List list={todoList} 
+        editTodoListProp={editTodo} 
+        removeTodoListProp={removeTodo}/>
+      </section>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {FaCheckCircle, FaTimesCircle} from 'react-icons/fa'
 
-const Todo = ({title, completed,removeTodoListProp }) => {
+const Todo = ({title, completed,removeTodoItemProp, editTodoItemProp}) => {
 
     const [isediting, setIsEditing] = useState(false);
     const [Value, setValue] = useState(title)
@@ -15,6 +15,7 @@ const Todo = ({title, completed,removeTodoListProp }) => {
     const handleInputKeyDown = (e) => {
         const key = e.keyCode;
         if (key === 13) { //enter key
+            editTodoItemProp({ title: tempValue });
             setValue(tempValue);
             setIsEditing(false);
         } else if (key === 27) { //esc key
@@ -28,7 +29,11 @@ const Todo = ({title, completed,removeTodoListProp }) => {
     };
 
     const handleButtonClick =() =>{
-        setCompleted((oldcompleted) => !oldcompleted);
+        setCompleted((oldCompleted) => {
+            const newState = !oldCompleted;
+            editTodoItemProp({ completed: newState });
+            return newState;
+        });
     }
 
     return (
@@ -52,7 +57,7 @@ const Todo = ({title, completed,removeTodoListProp }) => {
                     <button onClick={handleButtonClick}> {completedState ? <FaCheckCircle color='blue' fontSize="2em"/> : <FaCheckCircle color='green' fontSize="2em"/>}</button>
                 </div>
                 <div className='w-1/5'>
-                    <button onClick={removeTodoListProp}><FaTimesCircle color='red' fontSize="2em"/></button>
+                    <button onClick={removeTodoItemProp}><FaTimesCircle color='red' fontSize="2em"/></button>
                 </div>
             </div>
         </>
