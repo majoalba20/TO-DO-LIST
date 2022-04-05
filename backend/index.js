@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const PORT = 3030;
 const app = express();
@@ -7,6 +8,7 @@ const app = express();
 const todoRoutes = require("./routes/todoRoutes");
 
 app.use(express.json());
+app.use(cors());
 
 //"mongodb://localhost/todolist"
 mongoose.connect("mongodb://localhost/todolist")
